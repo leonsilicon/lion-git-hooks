@@ -13,6 +13,7 @@
 		"postinstall": "node ./postinstall.js",
 		"release": "lionp",
 		"prepare": "pnpm start",
+		"build": "node-ts ./scripts/build.ts",
 		"start": "node-ts ./src/cli.ts",
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest",
 		"lint": "eslint --cache --fix .",
@@ -22,6 +23,7 @@
 	"devDependencies": {
 		"@commitlint/cli": "^15.0.0",
 		"@leonzalion/configs": "latest",
+		"@types/is-ci": "^3.0.0",
 		"@types/jest": "^27.0.3",
 		"@types/node": "^17.0.0",
 		"desm": "^1.2.0",

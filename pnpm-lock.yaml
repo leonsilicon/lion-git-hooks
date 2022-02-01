@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@commitlint/cli': ^15.0.0
   '@leonzalion/configs': latest
+  '@types/is-ci': ^3.0.0
   '@types/jest': ^27.0.3
   '@types/node': ^17.0.0
   desm: ^1.2.0
@@ -30,6 +31,7 @@ dependencies:
 devDependencies:
   '@commitlint/cli': 15.0.0
   '@leonzalion/configs': 1.0.60_fcd026410a323ab658e28c58682e732d
+  '@types/is-ci': 3.0.0
   '@types/jest': 27.4.0
   '@types/node': 17.0.13
   desm: 1.2.0
@@ -1125,6 +1127,12 @@ packages:
 
   /@types/http-cache-semantics/4.0.1:
     resolution: {integrity: sha512-SZs7ekbP8CN0txVG2xVRH6EgKmEm31BOxA07vkFaETzZz1xh+cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn+iRPQ==}
+    dev: true
+
+  /@types/is-ci/3.0.0:
+    resolution: {integrity: sha512-Q0Op0hdWbYd1iahB+IFNQcWXFq4O0Q5MwQP7uN0souuQ4rPg1vEYcnIOfr1gY+M+6rc8FGoRaBO1mOOvL29sEQ==}
+    dependencies:
+      ci-info: 3.3.0
     dev: true
 
   /@types/istanbul-lib-coverage/2.0.4:
