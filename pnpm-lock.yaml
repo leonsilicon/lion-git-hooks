@@ -11,11 +11,10 @@ specifiers:
   is-ci: ^3.0.1
   jest: ^27.4.5
   lint-staged: ^12.1.3
-  lion-system: latest
+  lion-system: ^1.0.9
   lionp: ^1.0.15
   minimist: ^1.2.5
   prettier: ^2.5.1
-  simple-git-hooks: ^2.7.0
   sync-index: ^1.0.11
   ts-jest: ^27.1.2
   ts-jest-resolver: ^2.0.0
@@ -41,7 +40,6 @@ devDependencies:
   lion-system: 1.0.9
   lionp: 1.0.15
   prettier: 2.5.1
-  simple-git-hooks: 2.7.0
   sync-index: 1.0.11
   ts-jest: 27.1.3_a7e53b5e5b59e71a0fd4d8cf128393d5
   ts-jest-resolver: 2.0.0
@@ -6058,12 +6056,6 @@ packages:
 
   /signal-exit/3.0.6:
     resolution: {integrity: sha512-sDl4qMFpijcGw22U5w63KmD3cZJfBuFlVNbVMKje2keoKML7X2UzWbc4XrmEbDwg0NXJc3yv4/ox7b+JWb57kQ==}
-    dev: true
-
-  /simple-git-hooks/2.7.0:
-    resolution: {integrity: sha512-nQe6ASMO9zn5/htIrU37xEIHGr9E6wikXelLbOeTcfsX2O++DHaVug7RSQoq+kO7DvZTH37WA5gW49hN9HTDmQ==}
-    hasBin: true
-    requiresBuild: true
     dev: true
 
   /sisteransi/1.0.5:

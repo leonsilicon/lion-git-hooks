@@ -1,14 +1,9 @@
 {
 	"name": "simple-git-hooks",
 	"version": "1.0.0",
-	"description": "",
+	"description": "A fork of simple-git-hooks with additional features that fit my use case.",
 	"license": "MIT",
 	"repository": "leonzalion/simple-git-hooks",
-	"author": {
-		"name": "Leon Si",
-		"email": "contact@leonzalion.com",
-		"url": "https://leonzalion.com"
-	},
 	"lionp": {
 		"tests": false
 	},
@@ -17,7 +12,7 @@
 	"scripts": {
 		"postinstall": "node ./postinstall.js",
 		"release": "lionp",
-		"prepare": "simple-git-hooks",
+		"prepare": "pnpm start",
 		"start": "node-ts ./src/cli.ts",
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest",
 		"lint": "eslint --cache --fix .",
@@ -34,10 +29,9 @@
 		"execa": "^6.0.0",
 		"jest": "^27.4.5",
 		"lint-staged": "^12.1.3",
-		"lion-system": "latest",
+		"lion-system": "^1.0.9",
 		"lionp": "^1.0.15",
 		"prettier": "^2.5.1",
-		"simple-git-hooks": "^2.7.0",
 		"sync-index": "^1.0.11",
 		"ts-jest": "^27.1.2",
 		"ts-jest-resolver": "^2.0.0",
