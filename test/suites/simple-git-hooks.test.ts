@@ -24,7 +24,7 @@ const packageVersion = packageJson.version!;
 test('getProjectRootDirectory returns correct dir in typical case:', () => {
 	expect(
 		getProjectRootDirectoryFromNodeModules(
-			'var/my-project/node_modules/simple-git-hooks'
+			'var/my-project/node_modules/lion-git-hooks'
 		)
 	).toBe('var/my-project');
 });
@@ -32,26 +32,26 @@ test('getProjectRootDirectory returns correct dir in typical case:', () => {
 test('getProjectRootDirectory returns correct dir when used with windows delimiters:', () => {
 	expect(
 		getProjectRootDirectoryFromNodeModules(
-			'user\\allProjects\\project\\node_modules\\simple-git-hooks'
+			'user\\allProjects\\project\\node_modules\\lion-git-hooks'
 		)
 	).toBe('user/allProjects/project');
 });
 
 test('getProjectRootDirectory falls back to undefined when we are not in node_modules:', () => {
 	expect(
-		getProjectRootDirectoryFromNodeModules('var/my-project/simple-git-hooks')
+		getProjectRootDirectoryFromNodeModules('var/my-project/lion-git-hooks')
 	).toBe(undefined);
 });
 
 test('getProjectRootDirectory return correct dir when installed using pnpm:', () => {
 	expect(
 		getProjectRootDirectoryFromNodeModules(
-			`var/my-project/node_modules/.pnpm/simple-git-hooks@${packageVersion}`
+			`var/my-project/node_modules/.pnpm/lion-git-hooks@${packageVersion}`
 		)
 	).toBe('var/my-project');
 	expect(
 		getProjectRootDirectoryFromNodeModules(
-			`var/my-project/node_modules/.pnpm/simple-git-hooks@${packageVersion}/node_modules/simple-git-hooks`
+			`var/my-project/node_modules/.pnpm/lion-git-hooks@${packageVersion}/node_modules/lion-git-hooks`
 		)
 	).toBe('var/my-project');
 });
@@ -199,10 +199,10 @@ function getInstalledGitHooks(hooksDir: string): Record<string, string> {
 	return result;
 }
 
-test('creates git hooks if configuration is correct from .simple-git-hooks.js', () => {
+test('creates git hooks if configuration is correct from .lion-git-hooks.js', async () => {
 	createGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsPath);
 
-	setHooksFromConfig(projectWithConfigurationInAlternativeSeparateJsPath);
+	await setHooksFromConfig(projectWithConfigurationInAlternativeSeparateJsPath);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(
@@ -222,10 +222,12 @@ test('creates git hooks if configuration is correct from .simple-git-hooks.js', 
 	removeGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsPath);
 });
 
-test('creates git hooks if configuration is correct from .simple-git-hooks.cjs', () => {
+test('creates git hooks if configuration is correct from .lion-git-hooks.cjs', async () => {
 	createGitHooksFolder(projectWithConfigurationInAlternativeSeparateCjsPath);
 
-	setHooksFromConfig(projectWithConfigurationInAlternativeSeparateCjsPath);
+	await setHooksFromConfig(
+		projectWithConfigurationInAlternativeSeparateCjsPath
+	);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(
@@ -245,10 +247,10 @@ test('creates git hooks if configuration is correct from .simple-git-hooks.cjs',
 	removeGitHooksFolder(projectWithConfigurationInAlternativeSeparateCjsPath);
 });
 
-test('creates git hooks if configuration is correct from simple-git-hooks.cjs', () => {
+test('creates git hooks if configuration is correct from lion-git-hooks.cjs', async () => {
 	createGitHooksFolder(projectWithConfigurationInSeparateCjsPath);
 
-	setHooksFromConfig(projectWithConfigurationInSeparateCjsPath);
+	await setHooksFromConfig(projectWithConfigurationInSeparateCjsPath);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(projectWithConfigurationInSeparateCjsPath, '.git', 'hooks')
@@ -264,10 +266,10 @@ test('creates git hooks if configuration is correct from simple-git-hooks.cjs', 
 	removeGitHooksFolder(projectWithConfigurationInSeparateCjsPath);
 });
 
-test('creates git hooks if configuration is correct from simple-git-hooks.js', () => {
+test('creates git hooks if configuration is correct from lion-git-hooks.js', async () => {
 	createGitHooksFolder(projectWithConfigurationInSeparateJsPath);
 
-	setHooksFromConfig(projectWithConfigurationInSeparateJsPath);
+	await setHooksFromConfig(projectWithConfigurationInSeparateJsPath);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(projectWithConfigurationInSeparateJsPath, '.git', 'hooks')
@@ -283,10 +285,12 @@ test('creates git hooks if configuration is correct from simple-git-hooks.js', (
 	removeGitHooksFolder(projectWithConfigurationInSeparateJsPath);
 });
 
-test('creates git hooks if configuration is correct from .simple-git-hooks.json', () => {
+test('creates git hooks if configuration is correct from .lion-git-hooks.json', async () => {
 	createGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsonPath);
 
-	setHooksFromConfig(projectWithConfigurationInAlternativeSeparateJsonPath);
+	await setHooksFromConfig(
+		projectWithConfigurationInAlternativeSeparateJsonPath
+	);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(
@@ -306,10 +310,10 @@ test('creates git hooks if configuration is correct from .simple-git-hooks.json'
 	removeGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsonPath);
 });
 
-test('creates git hooks if configuration is correct from simple-git-hooks.json', () => {
+test('creates git hooks if configuration is correct from lion-git-hooks.json', async () => {
 	createGitHooksFolder(projectWithConfigurationInSeparateJsonPath);
 
-	setHooksFromConfig(projectWithConfigurationInSeparateJsonPath);
+	await setHooksFromConfig(projectWithConfigurationInSeparateJsonPath);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(projectWithConfigurationInSeparateJsonPath, '.git', 'hooks')
@@ -325,10 +329,10 @@ test('creates git hooks if configuration is correct from simple-git-hooks.json',
 	removeGitHooksFolder(projectWithConfigurationInSeparateJsonPath);
 });
 
-test('creates git hooks if configuration is correct from package.json', () => {
+test('creates git hooks if configuration is correct from package.json', async () => {
 	createGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 
-	setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
+	await setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(projectWithConfigurationInPackageJsonPath, '.git', 'hooks')
@@ -341,11 +345,11 @@ test('creates git hooks if configuration is correct from package.json', () => {
 	removeGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 });
 
-test('fails to create git hooks if configuration contains bad git hooks', () => {
+test('fails to create git hooks if configuration contains bad git hooks', async () => {
 	createGitHooksFolder(projectWithIncorrectConfigurationInPackageJson);
 
 	expect(() => {
-		setHooksFromConfig(projectWithIncorrectConfigurationInPackageJson);
+		await setHooksFromConfig(projectWithIncorrectConfigurationInPackageJson);
 	}).toThrow(
 		'[ERROR] Config was not in correct format. Please check git hooks or options name'
 	);
@@ -353,22 +357,22 @@ test('fails to create git hooks if configuration contains bad git hooks', () => 
 	removeGitHooksFolder(projectWithIncorrectConfigurationInPackageJson);
 });
 
-test('fails to create git hooks if not configured', () => {
+test('fails to create git hooks if not configured', async () => {
 	createGitHooksFolder(projectWithoutConfiguration);
 
 	expect(() => {
-		setHooksFromConfig(projectWithoutConfiguration);
+		await setHooksFromConfig(projectWithoutConfiguration);
 	}).toThrow(
-		'[ERROR] Config was not found! Please add `.simple-git-hooks.js` or `simple-git-hooks.js` or `.simple-git-hooks.json` or `simple-git-hooks.json` or `simple-git-hooks` entry in package.json.'
+		'[ERROR] Config was not found! Please add `.lion-git-hooks.js` or `lion-git-hooks.js` or `.lion-git-hooks.json` or `lion-git-hooks.json` or `lion-git-hooks` entry in package.json.'
 	);
 
 	removeGitHooksFolder(projectWithoutConfiguration);
 });
 
-test('removes git hooks', () => {
+test('removes git hooks', async () => {
 	createGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 
-	setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
+	await setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
 
 	let installedHooks = getInstalledGitHooks(
 		path.normalize(
@@ -391,7 +395,7 @@ test('removes git hooks', () => {
 	removeGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 });
 
-test('creates git hooks and removes unused git hooks', () => {
+test('creates git hooks and removes unused git hooks', async () => {
 	createGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 
 	const installedHooksDir = path.normalize(
@@ -405,7 +409,7 @@ test('creates git hooks and removes unused git hooks', () => {
 		JSON.stringify({ 'pre-push': '# do nothing' })
 	);
 
-	setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
+	await setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
 
 	installedHooks = getInstalledGitHooks(installedHooksDir);
 	expect(JSON.stringify(installedHooks)).toBe(
@@ -415,7 +419,7 @@ test('creates git hooks and removes unused git hooks', () => {
 	removeGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 });
 
-test('creates git hooks and removes unused but preserves specific git hooks', () => {
+test('creates git hooks and removes unused but preserves specific git hooks', async () => {
 	createGitHooksFolder(projectWithUnusedConfigurationInPackageJsonPath);
 
 	const installedHooksDir = path.normalize(
@@ -433,7 +437,7 @@ test('creates git hooks and removes unused but preserves specific git hooks', ()
 		JSON.stringify({ 'commit-msg': '# do nothing', 'pre-push': '# do nothing' })
 	);
 
-	setHooksFromConfig(projectWithUnusedConfigurationInPackageJsonPath);
+	await setHooksFromConfig(projectWithUnusedConfigurationInPackageJsonPath);
 
 	installedHooks = getInstalledGitHooks(installedHooksDir);
 	expect(JSON.stringify(installedHooks)).toBe(
@@ -444,27 +448,4 @@ test('creates git hooks and removes unused but preserves specific git hooks', ()
 	);
 
 	removeGitHooksFolder(projectWithUnusedConfigurationInPackageJsonPath);
-});
-
-test('creates git hooks and removes unused but preserves specific git hooks', () => {
-	createGitHooksFolder(projectWithCustomConfigurationFilePath);
-
-	setHooksFromConfig(projectWithCustomConfigurationFilePath, [
-		'npx',
-		'simple-git-hooks',
-		'./git-hooks.js',
-	]);
-	const installedHooks = getInstalledGitHooks(
-		path.normalize(
-			path.join(projectWithCustomConfigurationFilePath, '.git', 'hooks')
-		)
-	);
-	expect(JSON.stringify(installedHooks)).toBe(
-		JSON.stringify({
-			'pre-commit': `#!/bin/sh\nexit 1`,
-			'pre-push': `#!/bin/sh\nexit 1`,
-		})
-	);
-
-	removeGitHooksFolder(projectWithCustomConfigurationFilePath);
 });

@@ -1,12 +1,9 @@
 {
-	"name": "@leonzalion/simple-git-hooks",
+	"name": "lion-git-hooks",
 	"version": "1.0.0",
 	"description": "A fork of simple-git-hooks with additional features that fit my use case.",
 	"license": "MIT",
-	"repository": "leonzalion/simple-git-hooks",
-	"lionp": {
-		"tests": false
-	},
+	"repository": "leonzalion/lion-git-hooks",
 	"bin": "./cli.js",
 	"type": "module",
 	"scripts": {
@@ -48,11 +45,6 @@
 			"@leonzalion/configs/commitlint"
 		]
 	},
-	"simple-git-hooks": {
-		"pre-commit": "pnpm exec node-ts ./scripts/hooks/pre-commit.ts",
-		"pre-push": "pnpm exec node-ts ./scripts/hooks/pre-push.ts",
-		"commit-msg": "pnpm exec node-ts ./scripts/hooks/commit-msg.ts $@"
-	},
 	"lint-staged": {
 		"*.{js,ts}": [
 			"pnpm run lint",
@@ -60,7 +52,11 @@
 		]
 	},
 	"dependencies": {
+		"cosmiconfig": "^7.0.1",
 		"is-ci": "^3.0.1",
 		"minimist": "^1.2.5"
+	},
+	"publishConfig": {
+		"directory": "dist"
 	}
 }

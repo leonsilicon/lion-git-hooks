@@ -2,6 +2,6 @@
   "name": "simple-pre-commit-test-package",
   "version": "1.0.0",
   "dependencies": {
-    "simple-git-hooks": "1.0.0"
+    "lion-git-hooks": "1.0.0"
   }
 }

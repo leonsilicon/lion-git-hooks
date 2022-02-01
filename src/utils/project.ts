@@ -4,8 +4,8 @@ import process from 'node:process';
 import type { PackageJson } from 'type-fest';
 
 /**
- * Transforms the <project>/node_modules/simple-git-hooks to <project>
- * @param projectPath - path to the simple-git-hooks in node modules
+ * Transforms the <project>/node_modules/lion-git-hooks to <project>
+ * @param projectPath - path to the lion-git-hooks in node modules
  * @return an absolute path to the project or undefined if projectPath is not in node_modules
  */
 export function getProjectRootDirectoryFromNodeModules(
@@ -31,7 +31,7 @@ export function getProjectRootDirectoryFromNodeModules(
 		projDir.length > 2 &&
 		arraysAreEqual(projDir.slice(-2, projDir.length), [
 			'node_modules',
-			'simple-git-hooks',
+			'lion-git-hooks',
 		])
 	) {
 		return projDir.slice(0, -2).join('/');

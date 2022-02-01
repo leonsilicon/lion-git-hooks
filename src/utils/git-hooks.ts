@@ -1,12 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { getConfig, getCustomConfigPath } from './config.js';
+import { getConfig } from './config.js';
 import { VALID_GIT_HOOKS, getGitProjectRoot } from './git.js';
 import { getPackageJson } from './project.js';
 
 /**
- * Checks the 'simple-git-hooks' in dependencies of the project
+ * Checks the 'lion-git-hooks' in dependencies of the project
  * @throws TypeError if packageJsonData not an object
  */
 export function checkSimpleGitHooksInDependencies(
@@ -18,13 +18,13 @@ export function checkSimpleGitHooksInDependencies(
 
 	const { packageJsonContent } = getPackageJson(projectRootPath);
 
-	// If simple-git-hooks in dependencies -> note user that he should remove move it to devDeps!
+	// If lion-git-hooks in dependencies -> note user that he should remove move it to devDeps!
 	if (
 		'dependencies' in packageJsonContent &&
-		'simple-git-hooks' in packageJsonContent.dependencies!
+		'lion-git-hooks' in packageJsonContent.dependencies!
 	) {
 		console.warn(
-			'[WARN] You should move simple-git-hooks to the devDependencies!'
+			'[WARN] You should move lion-git-hooks to the devDependencies!'
 		);
 		return true; // We only check that we are in the correct package, e.g not in a dependency of a dependency
 	}
@@ -33,24 +33,20 @@ export function checkSimpleGitHooksInDependencies(
 		return false;
 	}
 
-	return 'simple-git-hooks' in packageJsonContent.devDependencies!;
+	return 'lion-git-hooks' in packageJsonContent.devDependencies!;
 }
 
 /**
  * Parses the config and sets git hooks
- * @param {string} projectRootPath
- * @param {string[]} [argv]
  */
-export function setHooksFromConfig(
-	projectRootPath = process.cwd(),
-	argv = process.argv
+export async function setHooksFromConfig(
+	projectRootPath: string = process.cwd()
 ) {
-	const customConfigPath = getCustomConfigPath(argv);
-	const config = getConfig(projectRootPath, customConfigPath);
+	const config = await getConfig(projectRootPath);
 
 	if (!config) {
 		throw new Error(
-			'[ERROR] Config was not found! Please add `.simple-git-hooks.js` or `simple-git-hooks.js` or `.simple-git-hooks.json` or `simple-git-hooks.json` or `simple-git-hooks` entry in package.json.\r\nCheck README for details'
+			'[ERROR] Config was not found! Please add `.lion-git-hooks.js` or `lion-git-hooks.js` or `.lion-git-hooks.json` or `lion-git-hooks.json` or `lion-git-hooks` entry in package.json.\r\nCheck README for details'
 		);
 	}
 
@@ -77,7 +73,7 @@ export function setHooksFromConfig(
  * @private
  */
 function setHook(hook: string, command: string, projectRoot = process.cwd()) {
-	const gitRoot = getGitProjectRoot(projectRoot);
+	const gitRoot = getGitProjectRoot(projectRoot)!;
 
 	const hookCommand = '#!/bin/sh\n' + command;
 	const hookDirectory = gitRoot + '/hooks/';
@@ -96,9 +92,9 @@ function setHook(hook: string, command: string, projectRoot = process.cwd()) {
 
 /**
  * Deletes all git hooks
- * @param {string} projectRoot
+ * @param projectRoot
  */
-export function removeHooks(projectRoot = process.cwd()) {
+export function removeHooks(projectRoot: string = process.cwd()) {
 	for (const configEntry of VALID_GIT_HOOKS) {
 		removeHook(configEntry, projectRoot);
 	}
@@ -111,7 +107,7 @@ export function removeHooks(projectRoot = process.cwd()) {
  * @private
  */
 function removeHook(hook: string, projectRoot: string = process.cwd()) {
-	const gitRoot = getGitProjectRoot(projectRoot);
+	const gitRoot = getGitProjectRoot(projectRoot)!;
 	const hookPath = path.normalize(gitRoot + '/hooks/' + hook);
 
 	if (fs.existsSync(hookPath)) {
