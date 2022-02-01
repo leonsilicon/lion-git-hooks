@@ -20,7 +20,7 @@ try {
 		);
 	}
 
-	await setHooksFromConfig(process.cwd());
+	await setHooksFromConfig();
 	console.info('[INFO] Successfully set all git hooks');
 } catch (error: unknown) {
 	console.error(

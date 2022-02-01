@@ -24,7 +24,7 @@ if (parsedProjectDirectory === undefined) {
 
 if (checkSimpleGitHooksInDependencies(projectDirectory)) {
 	try {
-		await setHooksFromConfig(projectDirectory);
+		await setHooksFromConfig();
 	} catch (error: unknown) {
 		console.error(
 			'[ERROR] Was not able to set git hooks. Reason: ' +

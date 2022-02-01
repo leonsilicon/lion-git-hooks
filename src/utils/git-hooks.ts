@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import process from 'node:process';
+import { globbySync } from 'globby';
 import { getConfig } from './config.js';
 import { VALID_GIT_HOOKS, getGitProjectRoot } from './git.js';
 import { getPackageJson } from './project.js';
+import type { HookOptions } from '~/types/config.js';
 
 /**
  * Checks the 'lion-git-hooks' in dependencies of the project
@@ -39,10 +40,8 @@ export function checkSimpleGitHooksInDependencies(
 /**
  * Parses the config and sets git hooks
  */
-export async function setHooksFromConfig(
-	projectRootPath: string = process.cwd()
-) {
-	const config = await getConfig(projectRootPath);
+export async function setHooksFromConfig() {
+	const config = await getConfig();
 
 	if (!config) {
 		throw new Error(
@@ -57,12 +56,59 @@ export async function setHooksFromConfig(
 		: [];
 
 	for (const hook of VALID_GIT_HOOKS) {
-		if (Object.prototype.hasOwnProperty.call(config, hook)) {
-			setHook(hook, config[hook]!, projectRootPath);
+		// eslint-disable-next-line no-await-in-loop
+		const hookOptions = await getHookOptions(hook);
+		if (hookOptions !== undefined) {
+			setHook(hook, hookOptions);
 		} else if (!preserveUnused.includes(hook)) {
-			removeHook(hook, projectRootPath);
+			removeHook(hook);
 		}
 	}
+}
+
+export async function getHookOptions(hook: string): Promise<HookOptions> {
+	const config = await getConfig();
+	const rootPath = getGitProjectRoot();
+
+	const defaultHookOptions = {
+		noCi: true,
+		ciOnly: false,
+	};
+
+	const providedHookOptions = config.hooks?.[hook];
+
+	if (
+		providedHookOptions?.file !== undefined &&
+		providedHookOptions?.command !== undefined
+	) {
+		throw new Error(
+			'Only one of `file` or `command` can be provided in the hook options.'
+		);
+	}
+
+	let hookCommand: string;
+	if (providedHookOptions?.command !== undefined) {
+		hookCommand = providedHookOptions.command;
+		// eslint-disable-next-line no-negated-condition
+	} else if (providedHookOptions?.file !== undefined) {
+		hookCommand = `pnpm exec node-ts ${providedHookOptions.file}`;
+	} else {
+		const matches = globbySync([
+			path.join(rootPath, `./scripts/${hook}.*`),
+			path.join(rootPath, `./scripts/src/${hook}.*`),
+		]);
+		if (matches.length === 0) {
+			throw new Error(`file for hook ${hook} not found.`);
+		}
+
+		hookCommand = `pnpm exec node-ts ${matches[0]!}`;
+	}
+
+	return {
+		...defaultHookOptions,
+		...providedHookOptions,
+		command: hookCommand,
+	};
 }
 
 /**
@@ -72,10 +118,10 @@ export async function setHooksFromConfig(
  * @param projectRoot
  * @private
  */
-function setHook(hook: string, command: string, projectRoot = process.cwd()) {
-	const gitRoot = getGitProjectRoot(projectRoot)!;
+function setHook(hook: string, hookOptions: HookOptions) {
+	const gitRoot = getGitProjectRoot()!;
 
-	const hookCommand = '#!/bin/sh\n' + command;
+	const hookCommand = '#!/bin/sh\n' + hookOptions.command;
 	const hookDirectory = gitRoot + '/hooks/';
 	const hookPath = path.normalize(hookDirectory + hook);
 
@@ -87,16 +133,18 @@ function setHook(hook: string, command: string, projectRoot = process.cwd()) {
 	fs.writeFileSync(hookPath, hookCommand);
 	fs.chmodSync(hookPath, 0o0755);
 
-	console.info(`[INFO] Successfully set the ${hook} with command: ${command}`);
+	console.info(
+		`[INFO] Successfully set the ${hook} with command: ${hookCommand}`
+	);
 }
 
 /**
  * Deletes all git hooks
  * @param projectRoot
  */
-export function removeHooks(projectRoot: string = process.cwd()) {
+export function removeHooks() {
 	for (const configEntry of VALID_GIT_HOOKS) {
-		removeHook(configEntry, projectRoot);
+		removeHook(configEntry);
 	}
 }
 
@@ -106,30 +154,11 @@ export function removeHooks(projectRoot: string = process.cwd()) {
  * @param projectRoot
  * @private
  */
-function removeHook(hook: string, projectRoot: string = process.cwd()) {
-	const gitRoot = getGitProjectRoot(projectRoot)!;
+function removeHook(hook: string) {
+	const gitRoot = getGitProjectRoot();
 	const hookPath = path.normalize(gitRoot + '/hooks/' + hook);
 
 	if (fs.existsSync(hookPath)) {
 		fs.unlinkSync(hookPath);
 	}
-}
-
-const VALID_OPTIONS = new Set(['preserveUnused']);
-
-/**
- * Validates the config, checks that every git hook or option is named correctly
- * @param config
- */
-export function validateHooks(config: Record<string, string>): boolean {
-	for (const hookOrOption in config) {
-		if (
-			!VALID_GIT_HOOKS.includes(hookOrOption) &&
-			!VALID_OPTIONS.has(hookOrOption)
-		) {
-			return false;
-		}
-	}
-
-	return true;
 }

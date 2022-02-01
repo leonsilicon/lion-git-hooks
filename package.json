@@ -53,8 +53,11 @@
 	},
 	"dependencies": {
 		"cosmiconfig": "^7.0.1",
+		"find-up": "^6.2.0",
+		"globby": "^13.1.0",
 		"is-ci": "^3.0.1",
-		"minimist": "^1.2.5"
+		"minimist": "^1.2.5",
+		"pkg-dir": "^6.0.1"
 	},
 	"publishConfig": {
 		"directory": "dist"
