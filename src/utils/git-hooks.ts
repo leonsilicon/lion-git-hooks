@@ -1,23 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { globbySync } from 'globby';
-import { getConfig } from './config.js';
-import { VALID_GIT_HOOKS, getGitProjectRoot } from './git.js';
+import { getHookConfig } from './config.js';
+import { VALID_GIT_HOOKS, getProjectGitFolder } from './git.js';
 import { getPackageJson } from './project.js';
-import type { HookOptions } from '~/types/config.js';
+import type { LionGitHooksConfig } from '~/types/config.js';
 
 /**
  * Checks the 'lion-git-hooks' in dependencies of the project
  * @throws TypeError if packageJsonData not an object
  */
 export function checkSimpleGitHooksInDependencies(
-	projectRootPath: string
+	config: LionGitHooksConfig
 ): boolean {
-	if (typeof projectRootPath !== 'string') {
-		throw new TypeError('Package json path is not a string!');
-	}
-
-	const { packageJsonContent } = getPackageJson(projectRootPath);
+	const { packageJsonContent } = getPackageJson(config);
 
 	// If lion-git-hooks in dependencies -> note user that he should remove move it to devDeps!
 	if (
@@ -40,75 +35,31 @@ export function checkSimpleGitHooksInDependencies(
 /**
  * Parses the config and sets git hooks
  */
-export async function setHooksFromConfig() {
-	const config = await getConfig();
-
+export function setHooksFromConfig(config: LionGitHooksConfig) {
 	if (!config) {
 		throw new Error(
 			'[ERROR] Config was not found! Please add `.lion-git-hooks.js` or `lion-git-hooks.js` or `.lion-git-hooks.json` or `lion-git-hooks.json` or `lion-git-hooks` entry in package.json.\r\nCheck README for details'
 		);
 	}
 
+	for (const hook of VALID_GIT_HOOKS) {
+		updateHook(config, hook);
+	}
+}
+
+export function updateHook(config: LionGitHooksConfig, hook: string) {
 	const preserveUnused = Array.isArray(config.preserveUnused)
 		? config.preserveUnused
 		: config.preserveUnused
 		? VALID_GIT_HOOKS
 		: [];
 
-	for (const hook of VALID_GIT_HOOKS) {
-		// eslint-disable-next-line no-await-in-loop
-		const hookOptions = await getHookOptions(hook);
-		if (hookOptions !== undefined) {
-			setHook(hook, hookOptions);
-		} else if (!preserveUnused.includes(hook)) {
-			removeHook(hook);
-		}
+	const hookConfig = getHookConfig(config, hook);
+	if (hookConfig !== undefined) {
+		setHook(config, hook);
+	} else if (!preserveUnused.includes(hook)) {
+		removeHook(config, hook);
 	}
-}
-
-export async function getHookOptions(hook: string): Promise<HookOptions> {
-	const config = await getConfig();
-	const rootPath = getGitProjectRoot();
-
-	const defaultHookOptions = {
-		noCi: true,
-		ciOnly: false,
-	};
-
-	const providedHookOptions = config.hooks?.[hook];
-
-	if (
-		providedHookOptions?.file !== undefined &&
-		providedHookOptions?.command !== undefined
-	) {
-		throw new Error(
-			'Only one of `file` or `command` can be provided in the hook options.'
-		);
-	}
-
-	let hookCommand: string;
-	if (providedHookOptions?.command !== undefined) {
-		hookCommand = providedHookOptions.command;
-		// eslint-disable-next-line no-negated-condition
-	} else if (providedHookOptions?.file !== undefined) {
-		hookCommand = `pnpm exec node-ts ${providedHookOptions.file}`;
-	} else {
-		const matches = globbySync([
-			path.join(rootPath, `./scripts/${hook}.*`),
-			path.join(rootPath, `./scripts/src/${hook}.*`),
-		]);
-		if (matches.length === 0) {
-			throw new Error(`file for hook ${hook} not found.`);
-		}
-
-		hookCommand = `pnpm exec node-ts ${matches[0]!}`;
-	}
-
-	return {
-		...defaultHookOptions,
-		...providedHookOptions,
-		command: hookCommand,
-	};
 }
 
 /**
@@ -118,11 +69,12 @@ export async function getHookOptions(hook: string): Promise<HookOptions> {
  * @param projectRoot
  * @private
  */
-function setHook(hook: string, hookOptions: HookOptions) {
-	const gitRoot = getGitProjectRoot()!;
+function setHook(config: LionGitHooksConfig, hook: string) {
+	const gitFolder = getProjectGitFolder(config)!;
+	const hookOptions = getHookConfig(config, hook)!;
 
 	const hookCommand = '#!/bin/sh\n' + hookOptions.command;
-	const hookDirectory = gitRoot + '/hooks/';
+	const hookDirectory = gitFolder + '/hooks/';
 	const hookPath = path.normalize(hookDirectory + hook);
 
 	const normalizedHookDirectory = path.normalize(hookDirectory);
@@ -142,9 +94,9 @@ function setHook(hook: string, hookOptions: HookOptions) {
  * Deletes all git hooks
  * @param projectRoot
  */
-export function removeHooks() {
+export function removeHooks(config: LionGitHooksConfig) {
 	for (const configEntry of VALID_GIT_HOOKS) {
-		removeHook(configEntry);
+		removeHook(config, configEntry);
 	}
 }
 
@@ -154,8 +106,8 @@ export function removeHooks() {
  * @param projectRoot
  * @private
  */
-function removeHook(hook: string) {
-	const gitRoot = getGitProjectRoot();
+function removeHook(config: LionGitHooksConfig, hook: string) {
+	const gitRoot = getProjectGitFolder(config);
 	const hookPath = path.normalize(gitRoot + '/hooks/' + hook);
 
 	if (fs.existsSync(hookPath)) {

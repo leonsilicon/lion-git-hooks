@@ -1,17 +1,23 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { join } from 'desm';
 import type { PackageJson } from 'type-fest';
 import {
 	checkSimpleGitHooksInDependencies,
-	getGitProjectRoot,
+	getConfig,
 	getProjectRootDirectoryFromNodeModules,
 	removeHooks,
 	setHooksFromConfig,
 } from '~/utils/index.js';
 
 const rootPath = join(import.meta.url, '../..');
+
+function getTestConfig(projectPath: string) {
+	const config = getConfig({
+		projectPath,
+	});
+	return config;
+}
 
 const packageJson = JSON.parse(
 	fs.readFileSync(path.join(rootPath, './package.json')).toString()
@@ -56,25 +62,7 @@ test('getProjectRootDirectory return correct dir when installed using pnpm:', ()
 	).toBe('var/my-project');
 });
 
-// Get git root
-
-const gitProjectRoot = path.normalize(path.join(rootPath, '.git'));
-const currentPath = path.normalize(rootPath);
-const currentFilePath = path.normalize(fileURLToPath(import.meta.url));
-
-test('get git root works from .git directory itself', () => {
-	expect(getGitProjectRoot(gitProjectRoot)).toBe(gitProjectRoot);
-});
-
-test('get git root works from any directory', () => {
-	expect(getGitProjectRoot(currentPath)).toBe(gitProjectRoot);
-});
-
-test('get git root works from any file', () => {
-	expect(getGitProjectRoot(currentFilePath)).toBe(gitProjectRoot);
-});
-
-// Check if simple-pre-commit is in devDependencies or dependencies in package json
+// Check if lion-git-hooks is in devDependencies or dependencies in package json
 
 const fixturesFolder = join(import.meta.url, '../fixtures');
 
@@ -89,21 +77,18 @@ const incorrectPackageJsonProjectPath = path.normalize(
 );
 
 test('returns true if simple pre commit really in devDeps', () => {
-	expect(checkSimpleGitHooksInDependencies(correctPackageJsonProjectPath)).toBe(
-		true
-	);
+	const config = getTestConfig(correctPackageJsonProjectPath);
+	expect(checkSimpleGitHooksInDependencies(config)).toBe(true);
 });
 
 test('returns true if simple pre commit really in deps', () => {
-	expect(
-		checkSimpleGitHooksInDependencies(correctPackageJsonProjectPath2)
-	).toBe(true);
+	const config = getTestConfig(correctPackageJsonProjectPath2);
+	expect(checkSimpleGitHooksInDependencies(config)).toBe(true);
 });
 
 test('returns false if simple pre commit isn`t in deps', () => {
-	expect(
-		checkSimpleGitHooksInDependencies(incorrectPackageJsonProjectPath)
-	).toBe(false);
+	const config = getTestConfig(incorrectPackageJsonProjectPath);
+	expect(checkSimpleGitHooksInDependencies(config)).toBe(false);
 });
 
 // Set and remove git hooks
@@ -116,48 +101,17 @@ const projectWithConfigurationInPackageJsonPath = path.normalize(
 const projectWithConfigurationInSeparateCjsPath = path.normalize(
 	path.join(fixturesFolder, 'project_with_configuration_in_separate_cjs')
 );
-const projectWithConfigurationInSeparateJsPath = path.normalize(
-	path.join(fixturesFolder, 'project_with_configuration_in_separate_js')
-);
 const projectWithConfigurationInAlternativeSeparateCjsPath = path.normalize(
 	path.join(
 		fixturesFolder,
 		'project_with_configuration_in_alternative_separate_cjs'
 	)
 );
-const projectWithConfigurationInAlternativeSeparateJsPath = path.normalize(
-	path.join(
-		fixturesFolder,
-		'project_with_configuration_in_alternative_separate_js'
-	)
-);
-const projectWithConfigurationInSeparateJsonPath = path.normalize(
-	path.join(fixturesFolder, 'project_with_configuration_in_separate_json')
-);
-const projectWithConfigurationInAlternativeSeparateJsonPath = path.normalize(
-	path.join(
-		fixturesFolder,
-		'project_with_configuration_in_alternative_separate_json'
-	)
-);
 const projectWithUnusedConfigurationInPackageJsonPath = path.normalize(
 	path.join(fixturesFolder, 'project_with_unused_configuration_in_package_json')
 );
-const projectWithCustomConfigurationFilePath = path.normalize(
-	path.join(fixturesFolder, 'project_with_custom_configuration')
-);
 
 // Incorrect configurations
-
-const projectWithIncorrectConfigurationInPackageJson = path.normalize(
-	path.join(
-		fixturesFolder,
-		'project_with_incorrect_configuration_in_package_json'
-	)
-);
-const projectWithoutConfiguration = path.normalize(
-	path.join(fixturesFolder, 'project_without_configuration')
-);
 
 /**
  * Creates .git/hooks dir from root
@@ -178,7 +132,7 @@ function createGitHooksFolder(root: string) {
  */
 function removeGitHooksFolder(root: string) {
 	if (fs.existsSync(root + '/.git')) {
-		fs.rmdirSync(root + '/.git', { recursive: true });
+		fs.rmSync(root + '/.git', { recursive: true });
 	}
 }
 
@@ -199,35 +153,42 @@ function getInstalledGitHooks(hooksDir: string): Record<string, string> {
 	return result;
 }
 
-test('creates git hooks if configuration is correct from .lion-git-hooks.js', async () => {
-	createGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsPath);
+const getHookDefaultCommand = (projectPath: string, hook: string) =>
+	`#!/bin/sh\npnpm exec node-ts ${JSON.stringify(
+		path.join(projectPath, `./scripts/hooks/${hook}.ts`)
+	)}`;
 
-	await setHooksFromConfig(projectWithConfigurationInAlternativeSeparateJsPath);
+const projectWithHookScriptsFolder = path.normalize(
+	path.join(fixturesFolder, 'project_with_hook_scripts_folder')
+);
+test('creates git hooks if the scripts/hooks folder is present', () => {
+	createGitHooksFolder(projectWithHookScriptsFolder);
+
+	const config = getTestConfig(projectWithHookScriptsFolder);
+
+	setHooksFromConfig(config);
+
 	const installedHooks = getInstalledGitHooks(
-		path.normalize(
-			path.join(
-				projectWithConfigurationInAlternativeSeparateJsPath,
-				'.git',
-				'hooks'
-			)
-		)
+		path.normalize(path.join(projectWithHookScriptsFolder, '.git', 'hooks'))
 	);
+
 	expect(JSON.stringify(installedHooks)).toBe(
 		JSON.stringify({
-			'pre-commit': `#!/bin/sh\nexit 1`,
-			'pre-push': `#!/bin/sh\nexit 1`,
+			'pre-commit': getHookDefaultCommand(
+				projectWithHookScriptsFolder,
+				'pre-commit'
+			),
 		})
 	);
-
-	removeGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsPath);
 });
 
-test('creates git hooks if configuration is correct from .lion-git-hooks.cjs', async () => {
+test('creates git hooks if configuration is correct from lion-git-hooks.config.cjs', () => {
 	createGitHooksFolder(projectWithConfigurationInAlternativeSeparateCjsPath);
 
-	await setHooksFromConfig(
+	const config = getTestConfig(
 		projectWithConfigurationInAlternativeSeparateCjsPath
 	);
+	setHooksFromConfig(config);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(
@@ -247,10 +208,11 @@ test('creates git hooks if configuration is correct from .lion-git-hooks.cjs', a
 	removeGitHooksFolder(projectWithConfigurationInAlternativeSeparateCjsPath);
 });
 
-test('creates git hooks if configuration is correct from lion-git-hooks.cjs', async () => {
+test('creates git hooks if configuration is correct from lion-git-hooks.cjs', () => {
 	createGitHooksFolder(projectWithConfigurationInSeparateCjsPath);
 
-	await setHooksFromConfig(projectWithConfigurationInSeparateCjsPath);
+	const config = getTestConfig(projectWithConfigurationInSeparateCjsPath);
+	setHooksFromConfig(config);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(projectWithConfigurationInSeparateCjsPath, '.git', 'hooks')
@@ -258,121 +220,40 @@ test('creates git hooks if configuration is correct from lion-git-hooks.cjs', as
 	);
 	expect(JSON.stringify(installedHooks)).toBe(
 		JSON.stringify({
-			'pre-commit': `#!/bin/sh\nexit 1`,
-			'pre-push': `#!/bin/sh\nexit 1`,
+			'pre-commit': getHookDefaultCommand(
+				projectWithConfigurationInSeparateCjsPath,
+				'pre-commit'
+			),
 		})
 	);
 
 	removeGitHooksFolder(projectWithConfigurationInSeparateCjsPath);
 });
 
-test('creates git hooks if configuration is correct from lion-git-hooks.js', async () => {
-	createGitHooksFolder(projectWithConfigurationInSeparateJsPath);
-
-	await setHooksFromConfig(projectWithConfigurationInSeparateJsPath);
-	const installedHooks = getInstalledGitHooks(
-		path.normalize(
-			path.join(projectWithConfigurationInSeparateJsPath, '.git', 'hooks')
-		)
-	);
-	expect(JSON.stringify(installedHooks)).toBe(
-		JSON.stringify({
-			'pre-commit': `#!/bin/sh\nexit 1`,
-			'pre-push': `#!/bin/sh\nexit 1`,
-		})
-	);
-
-	removeGitHooksFolder(projectWithConfigurationInSeparateJsPath);
-});
-
-test('creates git hooks if configuration is correct from .lion-git-hooks.json', async () => {
-	createGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsonPath);
-
-	await setHooksFromConfig(
-		projectWithConfigurationInAlternativeSeparateJsonPath
-	);
-	const installedHooks = getInstalledGitHooks(
-		path.normalize(
-			path.join(
-				projectWithConfigurationInAlternativeSeparateJsonPath,
-				'.git',
-				'hooks'
-			)
-		)
-	);
-	expect(JSON.stringify(installedHooks)).toBe(
-		JSON.stringify({
-			'pre-commit': `#!/bin/sh\nexit 1`,
-			'pre-push': `#!/bin/sh\nexit 1`,
-		})
-	);
-
-	removeGitHooksFolder(projectWithConfigurationInAlternativeSeparateJsonPath);
-});
-
-test('creates git hooks if configuration is correct from lion-git-hooks.json', async () => {
-	createGitHooksFolder(projectWithConfigurationInSeparateJsonPath);
-
-	await setHooksFromConfig(projectWithConfigurationInSeparateJsonPath);
-	const installedHooks = getInstalledGitHooks(
-		path.normalize(
-			path.join(projectWithConfigurationInSeparateJsonPath, '.git', 'hooks')
-		)
-	);
-	expect(JSON.stringify(installedHooks)).toBe(
-		JSON.stringify({
-			'pre-commit': `#!/bin/sh\nexit 1`,
-			'pre-push': `#!/bin/sh\nexit 1`,
-		})
-	);
-
-	removeGitHooksFolder(projectWithConfigurationInSeparateJsonPath);
-});
-
-test('creates git hooks if configuration is correct from package.json', async () => {
+test('creates git hooks if configuration is correct from package.json', () => {
 	createGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 
-	await setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
+	const config = getTestConfig(projectWithConfigurationInPackageJsonPath);
+	setHooksFromConfig(config);
 	const installedHooks = getInstalledGitHooks(
 		path.normalize(
 			path.join(projectWithConfigurationInPackageJsonPath, '.git', 'hooks')
 		)
 	);
 	expect(JSON.stringify(installedHooks)).toBe(
-		JSON.stringify({ 'pre-commit': `#!/bin/sh\nexit 1` })
+		JSON.stringify({
+			'pre-commit': '#!/bin/sh\nexit 1',
+		})
 	);
 
 	removeGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 });
 
-test('fails to create git hooks if configuration contains bad git hooks', async () => {
-	createGitHooksFolder(projectWithIncorrectConfigurationInPackageJson);
-
-	expect(() => {
-		await setHooksFromConfig(projectWithIncorrectConfigurationInPackageJson);
-	}).toThrow(
-		'[ERROR] Config was not in correct format. Please check git hooks or options name'
-	);
-
-	removeGitHooksFolder(projectWithIncorrectConfigurationInPackageJson);
-});
-
-test('fails to create git hooks if not configured', async () => {
-	createGitHooksFolder(projectWithoutConfiguration);
-
-	expect(() => {
-		await setHooksFromConfig(projectWithoutConfiguration);
-	}).toThrow(
-		'[ERROR] Config was not found! Please add `.lion-git-hooks.js` or `lion-git-hooks.js` or `.lion-git-hooks.json` or `lion-git-hooks.json` or `lion-git-hooks` entry in package.json.'
-	);
-
-	removeGitHooksFolder(projectWithoutConfiguration);
-});
-
-test('removes git hooks', async () => {
+test('removes git hooks', () => {
 	createGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 
-	await setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
+	const config = getTestConfig(projectWithConfigurationInPackageJsonPath);
+	setHooksFromConfig(config);
 
 	let installedHooks = getInstalledGitHooks(
 		path.normalize(
@@ -383,7 +264,7 @@ test('removes git hooks', async () => {
 		JSON.stringify({ 'pre-commit': `#!/bin/sh\nexit 1` })
 	);
 
-	removeHooks(projectWithConfigurationInPackageJsonPath);
+	removeHooks(config);
 
 	installedHooks = getInstalledGitHooks(
 		path.normalize(
@@ -395,7 +276,7 @@ test('removes git hooks', async () => {
 	removeGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 });
 
-test('creates git hooks and removes unused git hooks', async () => {
+test('creates git hooks and removes unused git hooks', () => {
 	createGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 
 	const installedHooksDir = path.normalize(
@@ -409,7 +290,8 @@ test('creates git hooks and removes unused git hooks', async () => {
 		JSON.stringify({ 'pre-push': '# do nothing' })
 	);
 
-	await setHooksFromConfig(projectWithConfigurationInPackageJsonPath);
+	const config = getTestConfig(projectWithConfigurationInPackageJsonPath);
+	setHooksFromConfig(config);
 
 	installedHooks = getInstalledGitHooks(installedHooksDir);
 	expect(JSON.stringify(installedHooks)).toBe(
@@ -419,7 +301,7 @@ test('creates git hooks and removes unused git hooks', async () => {
 	removeGitHooksFolder(projectWithConfigurationInPackageJsonPath);
 });
 
-test('creates git hooks and removes unused but preserves specific git hooks', async () => {
+test('creates git hooks and removes unused but preserves specific git hooks', () => {
 	createGitHooksFolder(projectWithUnusedConfigurationInPackageJsonPath);
 
 	const installedHooksDir = path.normalize(
@@ -437,13 +319,13 @@ test('creates git hooks and removes unused but preserves specific git hooks', as
 		JSON.stringify({ 'commit-msg': '# do nothing', 'pre-push': '# do nothing' })
 	);
 
-	await setHooksFromConfig(projectWithUnusedConfigurationInPackageJsonPath);
+	const config = getTestConfig(projectWithUnusedConfigurationInPackageJsonPath);
+	setHooksFromConfig(config);
 
 	installedHooks = getInstalledGitHooks(installedHooksDir);
 	expect(JSON.stringify(installedHooks)).toBe(
 		JSON.stringify({
 			'commit-msg': '# do nothing',
-			'pre-commit': `#!/bin/sh\nexit 1`,
 		})
 	);
 

@@ -17,6 +17,7 @@ specifiers:
   lint-staged: ^12.1.3
   lion-system: ^1.0.9
   lionp: ^1.0.15
+  map-obj: ^5.0.0
   minimist: ^1.2.5
   pkg-dir: ^6.0.1
   prettier: ^2.5.1
@@ -33,6 +34,7 @@ dependencies:
   find-up: 6.2.0
   globby: 13.1.0
   is-ci: 3.0.1
+  map-obj: 5.0.0
   minimist: 1.2.5
   pkg-dir: 6.0.1
 
@@ -4998,6 +5000,11 @@ packages:
     resolution: {integrity: sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==}
     engines: {node: '>=8'}
     dev: true
+
+  /map-obj/5.0.0:
+    resolution: {integrity: sha512-2L3MIgJynYrZ3TYMriLDLWocz15okFakV6J12HXvMXDHui2x/zgChzg1u9mFFGbbGWE+GsLpQByt4POb9Or+uA==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: false
 
   /memory-fs/0.2.0:
     resolution: {integrity: sha1-8rslNovBIeORwlIN6Slpyu4KApA=}

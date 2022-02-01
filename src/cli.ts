@@ -4,7 +4,7 @@
 import process from 'node:process';
 import isCi from 'is-ci';
 import minimist from 'minimist';
-import { setHooksFromConfig } from './utils/git-hooks.js';
+import { setHooksFromConfig, getConfig } from './utils/index.js';
 
 try {
 	const argv = minimist(process.argv.slice(2));
@@ -20,7 +20,7 @@ try {
 		);
 	}
 
-	await setHooksFromConfig();
+	setHooksFromConfig(getConfig());
 	console.info('[INFO] Successfully set all git hooks');
 } catch (error: unknown) {
 	console.error(

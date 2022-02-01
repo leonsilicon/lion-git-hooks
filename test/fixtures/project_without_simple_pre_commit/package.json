@@ -1,5 +1,5 @@
 {
-  "name": "simple-pre-commit-test-package",
+  "name": "lion-git-hooks-test-package",
   "version": "1.0.0",
   "devDependencies": {
   },

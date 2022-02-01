@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { findUpSync } from 'find-up';
 
 export const VALID_GIT_HOOKS = [
@@ -31,12 +32,20 @@ export const VALID_GIT_HOOKS = [
 	'post-index-change',
 ];
 
-export function getGitProjectRoot(): string {
-	const gitProjectRoot = findUpSync('.git');
+export function getGitProjectRoot(config: { projectPath?: string }): string {
+	if (config.projectPath) return config.projectPath;
+
+	const gitProjectRoot = findUpSync('.git', { type: 'directory' });
 
 	if (gitProjectRoot === undefined) {
 		throw new Error('.git project root not found');
 	}
 
-	return gitProjectRoot;
+	return path.join(gitProjectRoot, '..');
+}
+
+export function getProjectGitFolder(config: { projectPath?: string }): string {
+	const gitProjectRoot = getGitProjectRoot(config);
+
+	return path.join(gitProjectRoot, '.git');
 }

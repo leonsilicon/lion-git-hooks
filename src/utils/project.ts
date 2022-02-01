@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import process from 'node:process';
 import type { PackageJson } from 'type-fest';
+import type { LionGitHooksConfig } from '~/types/config.js';
 
 /**
  * Transforms the <project>/node_modules/lion-git-hooks to <project>
@@ -47,15 +47,17 @@ export function getProjectRootDirectoryFromNodeModules(
  * @throws Error if cant read package.json
  * @private
  */
-export function getPackageJson(projectPath: string = process.cwd()): {
+export function getPackageJson(config: LionGitHooksConfig): {
 	packageJsonContent: PackageJson;
 	packageJsonPath: string;
 } {
-	if (typeof projectPath !== 'string') {
+	if (typeof config.projectPath !== 'string') {
 		throw new TypeError('projectPath is not a string');
 	}
 
-	const targetPackageJson = path.normalize(projectPath + '/package.json');
+	const targetPackageJson = path.normalize(
+		config.projectPath + '/package.json'
+	);
 
 	if (!fs.statSync(targetPackageJson).isFile()) {
 		throw new Error("Package.json doesn't exist");

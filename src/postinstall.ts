@@ -3,10 +3,11 @@
  */
 import process from 'node:process';
 import {
+	getConfig,
+	getProjectRootDirectoryFromNodeModules,
 	checkSimpleGitHooksInDependencies,
 	setHooksFromConfig,
-} from './utils/git-hooks.js';
-import { getProjectRootDirectoryFromNodeModules } from './utils/project.js';
+} from '~/utils/index.js';
 
 let projectDirectory;
 
@@ -22,9 +23,13 @@ if (parsedProjectDirectory === undefined) {
 	projectDirectory = parsedProjectDirectory;
 }
 
-if (checkSimpleGitHooksInDependencies(projectDirectory)) {
+const config = getConfig({
+	projectPath: projectDirectory,
+});
+
+if (checkSimpleGitHooksInDependencies(config)) {
 	try {
-		await setHooksFromConfig();
+		setHooksFromConfig(config);
 	} catch (error: unknown) {
 		console.error(
 			'[ERROR] Was not able to set git hooks. Reason: ' +
