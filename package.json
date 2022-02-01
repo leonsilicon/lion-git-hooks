@@ -1,5 +1,5 @@
 {
-	"name": "simple-git-hooks",
+	"name": "@leonzalion/simple-git-hooks",
 	"version": "1.0.0",
 	"description": "A fork of simple-git-hooks with additional features that fit my use case.",
 	"license": "MIT",
