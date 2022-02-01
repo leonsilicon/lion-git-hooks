@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import isCI from 'is-ci';
 import { getHookConfig } from './config.js';
 import { VALID_GIT_HOOKS, getProjectGitFolder } from './git.js';
 import { getPackageJson } from './project.js';
@@ -35,7 +36,25 @@ export function checkSimpleGitHooksInDependencies(
 /**
  * Parses the config and sets git hooks
  */
-export function setHooksFromConfig(config: LionGitHooksConfig) {
+export function setHooksFromConfig(
+	config: LionGitHooksConfig
+): { hooksSet: true } | { hooksSet: false; reason: string } {
+	if (config.noCi && isCI) {
+		return {
+			hooksSet: false,
+			reason:
+				'Skipped setting hooks because a CI environment was detected and --no-ci was set',
+		};
+	}
+
+	if (config.ciOnly && !isCI) {
+		return {
+			hooksSet: false,
+			reason:
+				"Skipped setting hooks because a CI environment wasn't detected and --ci-only was set.",
+		};
+	}
+
 	if (!config) {
 		throw new Error(
 			'[ERROR] Config was not found! Please add `.lion-git-hooks.js` or `lion-git-hooks.js` or `.lion-git-hooks.json` or `lion-git-hooks.json` or `lion-git-hooks` entry in package.json.\r\nCheck README for details'
@@ -45,6 +64,10 @@ export function setHooksFromConfig(config: LionGitHooksConfig) {
 	for (const hook of VALID_GIT_HOOKS) {
 		updateHook(config, hook);
 	}
+
+	return {
+		hooksSet: true,
+	};
 }
 
 export function updateHook(config: LionGitHooksConfig, hook: string) {

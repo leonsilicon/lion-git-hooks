@@ -2,26 +2,23 @@
  * A CLI tool to change the git hooks to commands from config
  */
 import process from 'node:process';
-import isCi from 'is-ci';
 import minimist from 'minimist';
 import { setHooksFromConfig, getConfig } from './utils/index.js';
 
+const argv = minimist(process.argv.slice(2));
+
 try {
-	const argv = minimist(process.argv.slice(2));
-	if (argv['no-ci'] && isCi) {
-		console.info(
-			'[INFO] Skipped setting hooks because a CI environment was detected and --no-ci was set'
-		);
-	}
+	const result = setHooksFromConfig({
+		...getConfig(),
+		...(argv['no-ci'] && { noCi: argv['no-ci'] as boolean }),
+		...(argv['ci-only'] && { noCi: argv['ci-only'] as boolean }),
+	});
 
-	if (argv['ci-only'] && !isCi) {
-		console.info(
-			"[INFO] Skipped setting hooks because a CI environment wasn't detected and --ci-only was set."
-		);
+	if (result.hooksSet) {
+		console.info('[INFO] Successfully set all git hooks');
+	} else {
+		console.info(`[INFO] ${result.reason}`);
 	}
-
-	setHooksFromConfig(getConfig());
-	console.info('[INFO] Successfully set all git hooks');
 } catch (error: unknown) {
 	console.error(
 		'[ERROR], Was not able to set git hooks. Error: ' + (error as Error).message

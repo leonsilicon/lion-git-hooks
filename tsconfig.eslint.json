@@ -6,6 +6,8 @@
 		"scripts",
 		".eslintrc.cjs",
 		".markdownlint.js",
-		"jest.config.mjs"
+		"jest.config.mjs",
+		"sync-index.config.cjs",
+		"postinstall.js"
 	]
 }
