@@ -51,7 +51,7 @@ export function getHookConfig(
 	} else if (providedHookOptions?.file !== undefined) {
 		hookCommand = `pnpm exec node-ts ${JSON.stringify(
 			providedHookOptions.file
-		)}`;
+		)} $@`;
 	} else {
 		const matches = globbySync([
 			path.join(rootPath, `./scripts/hooks/${hook}.*`),
@@ -67,7 +67,7 @@ export function getHookConfig(
 			}
 		}
 
-		hookCommand = `pnpm exec node-ts ${JSON.stringify(matches[0]!)}`;
+		hookCommand = `pnpm exec node-ts ${JSON.stringify(matches[0]!)} $@`;
 	}
 
 	return {
