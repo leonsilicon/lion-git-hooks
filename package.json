@@ -7,11 +7,11 @@
 	"bin": "./cli.js",
 	"type": "module",
 	"scripts": {
-		"postinstall": "node ./postinstall.js",
+		"postinstall": "node ./bin/postinstall.js",
 		"release": "lionp",
 		"prepare": "pnpm start",
 		"build": "node-ts ./scripts/build.ts",
-		"start": "node-ts ./src/cli.ts",
+		"start": "node-ts ./bin/cli.ts",
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest",
 		"lint": "eslint --cache --fix .",
 		"prettier": "prettier --write src",
