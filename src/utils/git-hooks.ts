@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import isCI from 'is-ci';
+import isHeroku from 'is-heroku';
 import { getHookConfig } from './config.js';
 import { VALID_GIT_HOOKS, getProjectGitFolder } from './git.js';
 import { getPackageJson } from './project.js';
 import type { LionGitHooksConfig } from '~/types/config.js';
-import { isHeroku } from '~/utils/heroku.js';
 
 /**
  * Checks the 'lion-git-hooks' in dependencies of the project
@@ -40,7 +40,7 @@ export function checkSimpleGitHooksInDependencies(
 export function setHooksFromConfig(
 	config: LionGitHooksConfig
 ): { hooksSet: true } | { hooksSet: false; reason: string } {
-	if (config.noCi && (isCI || isHeroku())) {
+	if (config.noCi && (isCI || isHeroku)) {
 		return {
 			hooksSet: false,
 			reason:

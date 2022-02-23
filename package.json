@@ -56,7 +56,7 @@
 		"find-up": "^6.2.0",
 		"globby": "^13.1.0",
 		"is-ci": "^3.0.1",
-		"is-heroku": "^2.0.0",
+		"is-heroku": "^3.0.0",
 		"map-obj": "^5.0.0",
 		"minimist": "^1.2.5",
 		"pkg-dir": "^6.0.1"
