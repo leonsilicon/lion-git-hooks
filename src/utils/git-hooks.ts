@@ -2,13 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import isCI from 'is-ci';
 import { getHookConfig } from './config.js';
-import { VALID_GIT_HOOKS, getProjectGitFolder } from './git.js';
+import { getValidGitHooks, getProjectGitFolder } from './git.js';
 import { getPackageJson } from './project.js';
 import type { LionGitHooksConfig } from '~/types/config.js';
 
 /**
  * Checks the 'lion-git-hooks' in dependencies of the project
- * @throws TypeError if packageJsonData not an object
  */
 export function checkSimpleGitHooksInDependencies(
 	config: LionGitHooksConfig
@@ -61,7 +60,7 @@ export function setHooksFromConfig(
 		);
 	}
 
-	for (const hook of VALID_GIT_HOOKS) {
+	for (const hook of getValidGitHooks()) {
 		updateHook(config, hook);
 	}
 
@@ -74,7 +73,7 @@ export function updateHook(config: LionGitHooksConfig, hook: string) {
 	const preserveUnused = Array.isArray(config.preserveUnused)
 		? config.preserveUnused
 		: config.preserveUnused
-		? VALID_GIT_HOOKS
+		? getValidGitHooks()
 		: [];
 
 	const hookConfig = getHookConfig(config, hook);
@@ -118,7 +117,7 @@ function setHook(config: LionGitHooksConfig, hook: string) {
  * @param projectRoot
  */
 export function removeHooks(config: LionGitHooksConfig) {
-	for (const configEntry of VALID_GIT_HOOKS) {
+	for (const configEntry of getValidGitHooks()) {
 		removeHook(config, configEntry);
 	}
 }

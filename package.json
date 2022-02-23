@@ -59,6 +59,7 @@
 		"is-heroku": "^3.0.0",
 		"map-obj": "^5.0.0",
 		"minimist": "^1.2.5",
+		"onetime": "^6.0.0",
 		"pkg-dir": "^6.0.1"
 	},
 	"publishConfig": {

@@ -20,6 +20,7 @@ specifiers:
   lionp: ^1.0.15
   map-obj: ^5.0.0
   minimist: ^1.2.5
+  onetime: ^6.0.0
   pkg-dir: ^6.0.1
   prettier: ^2.5.1
   sync-index: ^1.0.11
@@ -38,6 +39,7 @@ dependencies:
   is-heroku: 3.0.0
   map-obj: 5.0.0
   minimist: 1.2.5
+  onetime: 6.0.0
   pkg-dir: 6.0.1
 
 devDependencies:
@@ -5095,7 +5097,6 @@ packages:
   /mimic-fn/4.0.0:
     resolution: {integrity: sha512-vqiC06CuhBTUdZH+RYl8sFrL096vA45Ok5ISO6sE/Mr1jRbGH4Csnhi8f3wKVl7x8mO4Au7Ir9D3Oyv1VYMFJw==}
     engines: {node: '>=12'}
-    dev: true
 
   /mimic-response/1.0.1:
     resolution: {integrity: sha512-j5EctnkH7amfV/q5Hgmoal1g2QHFJRraOtmx0JpIqkxhBhI/lJSl1nMpQ45hVarwNETOoWEimndZ4QK0RHxuxQ==}
@@ -5306,7 +5307,6 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       mimic-fn: 4.0.0
-    dev: true
 
   /open-editor/4.0.0:
     resolution: {integrity: sha512-5mKZ98iFdkivozt5XTCOspoKbL3wtYu6oOoVxfWQ0qUX9NYsK8pdkHE7VUHXr+CwyC3nf6mV0S5FPsMS65innw==}

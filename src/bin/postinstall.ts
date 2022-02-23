@@ -2,12 +2,18 @@
  * Creates the pre-commit from command in config by default
  */
 import process from 'node:process';
+import isHeroku from 'is-heroku';
 import {
 	getConfig,
 	getProjectRootDirectoryFromNodeModules,
 	checkSimpleGitHooksInDependencies,
 	setHooksFromConfig,
 } from '~/utils/index.js';
+
+if (isHeroku) {
+	console.info('[INFO] Skipped setting hooks on Heroku.');
+	process.exit(0);
+}
 
 let projectDirectory;
 

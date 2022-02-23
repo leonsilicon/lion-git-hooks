@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { findUpSync } from 'find-up';
+import onetime from 'onetime';
 
-export const VALID_GIT_HOOKS = [
+export const getValidGitHooks = onetime(() => [
 	'applypatch-msg',
 	'pre-applypatch',
 	'post-applypatch',
@@ -30,7 +31,7 @@ export const VALID_GIT_HOOKS = [
 	'p4-post-changelist',
 	'p4-pre-submit',
 	'post-index-change',
-];
+]);
 
 export function getGitProjectRoot(config: { projectPath?: string }): string {
 	if (config.projectPath) return config.projectPath;

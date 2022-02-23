@@ -2,12 +2,13 @@ import path from 'node:path';
 import process from 'node:process';
 import { cosmiconfigSync } from 'cosmiconfig';
 import { globbySync } from 'globby';
+import onetime from 'onetime';
 import type {
 	HookConfig,
 	LionGitHooksConfig,
 	UserLionGitHooksConfig,
 } from '~/types/config.js';
-import { getGitProjectRoot, VALID_GIT_HOOKS } from '~/utils/git.js';
+import { getGitProjectRoot, getValidGitHooks } from '~/utils/git.js';
 
 /**
  * Gets the user-supplied config
@@ -110,7 +111,7 @@ export function getConfig(
 	};
 }
 
-const VALID_OPTIONS = new Set(['preserveUnused']);
+const getValidOptions = onetime(() => new Set(['preserveUnused']));
 
 /**
  * Validates the config, checks that every git hook or option is named correctly
@@ -119,8 +120,8 @@ const VALID_OPTIONS = new Set(['preserveUnused']);
 export function validateConfig(config: LionGitHooksConfig): boolean {
 	for (const hookOrOption in config.hooks) {
 		if (
-			!VALID_GIT_HOOKS.includes(hookOrOption) &&
-			!VALID_OPTIONS.has(hookOrOption)
+			!getValidGitHooks().includes(hookOrOption) &&
+			!getValidOptions().has(hookOrOption)
 		) {
 			return false;
 		}
