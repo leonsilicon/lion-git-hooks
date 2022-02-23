@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import isCI from 'is-ci';
-import isHeroku from 'is-heroku';
 import { getHookConfig } from './config.js';
 import { VALID_GIT_HOOKS, getProjectGitFolder } from './git.js';
 import { getPackageJson } from './project.js';
@@ -40,7 +39,7 @@ export function checkSimpleGitHooksInDependencies(
 export function setHooksFromConfig(
 	config: LionGitHooksConfig
 ): { hooksSet: true } | { hooksSet: false; reason: string } {
-	if (config.noCi && (isCI || isHeroku)) {
+	if (config.noCi && isCI) {
 		return {
 			hooksSet: false,
 			reason:

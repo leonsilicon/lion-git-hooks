@@ -3,11 +3,17 @@
  */
 import process from 'node:process';
 import minimist from 'minimist';
+import isHeroku from 'is-heroku';
 import { setHooksFromConfig, getConfig } from './utils/index.js';
 
 const argv = minimist(process.argv.slice(2));
 
 try {
+	if (isHeroku) {
+		console.info('[INFO] Skipped setting hooks on Heroku.');
+		process.exit(0);
+	}
+
 	const result = setHooksFromConfig({
 		...getConfig(),
 		...(argv['no-ci'] && { noCi: argv['no-ci'] as boolean }),
