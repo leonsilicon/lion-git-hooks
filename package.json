@@ -4,10 +4,9 @@
 	"description": "A fork of simple-git-hooks with additional features that fit my use case.",
 	"license": "MIT",
 	"repository": "leonzalion/lion-git-hooks",
-	"bin": "./cli.js",
+	"bin": "./bin/cli.js",
 	"type": "module",
 	"scripts": {
-		"postinstall": "node ./bin/postinstall.js",
 		"release": "lionp",
 		"prepare": "pnpm start",
 		"build": "node-ts ./scripts/build.ts",
