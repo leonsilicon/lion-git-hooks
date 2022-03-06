@@ -5,9 +5,8 @@
 		"test",
 		"scripts",
 		".eslintrc.cjs",
-		".markdownlint.js",
-		"jest.config.mjs",
-		"sync-index.config.cjs",
+		".markdownlint.cjs",
+		"vitest.config.ts",
 		"postinstall.js"
 	]
 }

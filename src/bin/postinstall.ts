@@ -3,12 +3,12 @@
  */
 import process from 'node:process';
 import isHeroku from 'is-heroku';
+import { getConfig } from '~/utils/config.js';
 import {
-	getConfig,
-	getProjectRootDirectoryFromNodeModules,
 	checkSimpleGitHooksInDependencies,
 	setHooksFromConfig,
-} from '~/utils/index.js';
+} from '~/utils/git-hooks.js';
+import { getProjectRootDirectoryFromNodeModules } from '~/utils/project.js';
 
 if (isHeroku) {
 	console.info('[INFO] Skipped setting hooks on Heroku.');

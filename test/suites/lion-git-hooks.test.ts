@@ -2,13 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { join } from 'desm';
 import type { PackageJson } from 'type-fest';
+import { test, expect } from 'vitest';
+import { getConfig } from '~/utils/config.js';
+import { getProjectRootDirectoryFromNodeModules } from '~/utils/project.js';
 import {
 	checkSimpleGitHooksInDependencies,
-	getConfig,
-	getProjectRootDirectoryFromNodeModules,
-	removeHooks,
 	setHooksFromConfig,
-} from '~/utils/index.js';
+	removeHooks,
+} from '~/utils/git-hooks.js';
 
 const rootPath = join(import.meta.url, '../..');
 

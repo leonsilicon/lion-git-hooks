@@ -4,7 +4,8 @@
 import process from 'node:process';
 import minimist from 'minimist';
 import isHeroku from 'is-heroku';
-import { setHooksFromConfig, getConfig } from '../utils/index.js';
+import { getConfig } from '~/utils/config.js';
+import { setHooksFromConfig } from '~/utils/git-hooks.js';
 
 if (isHeroku) {
 	console.info('[INFO] Skipped setting hooks on Heroku.');
