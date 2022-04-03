@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * A CLI tool to change the git hooks to commands from config
  */

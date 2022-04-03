@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Creates the pre-commit from command in config by default
  */
