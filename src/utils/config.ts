@@ -57,6 +57,7 @@ export function getHookConfig(
 		const matches = globbySync([
 			path.join(rootPath, `./scripts/hooks/${hook}.*`),
 			path.join(rootPath, `./scripts/src/hooks/${hook}.*`),
+			path.join(rootPath, `./packages/scripts/src/hooks/${hook}.*`),
 		]);
 
 		if (matches.length === 0) {
