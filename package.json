@@ -1,6 +1,6 @@
 {
 	"name": "lion-git-hooks",
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"description": "A fork of simple-git-hooks with additional features that fit my use case.",
 	"license": "MIT",
 	"repository": {
