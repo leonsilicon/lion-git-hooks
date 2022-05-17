@@ -1,8 +1,6 @@
 {
-  "name": "lion-git-hooks-test-package",
-  "version": "1.0.0",
-  "devDependencies": {
-  },
-  "dependencies": {
-  }
+	"name": "lion-git-hooks-test-package",
+	"version": "1.0.0",
+	"devDependencies": {},
+	"dependencies": {}
 }
