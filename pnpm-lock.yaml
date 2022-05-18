@@ -11,7 +11,7 @@ specifiers:
   globby: ^13.1.1
   is-ci: ^3.0.1
   is-heroku: ^3.0.0
-  lionconfig: ^1.7.3
+  lionconfig: ^1.7.6
   map-obj: ^5.0.1
   minimist: ^1.2.6
   onetime: ^6.0.0
@@ -38,7 +38,7 @@ devDependencies:
   '@types/node': 17.0.34
   desm: 1.2.0
   execa: 6.1.0
-  lionconfig: 1.7.3_typescript@4.6.4
+  lionconfig: 1.7.6_typescript@4.6.4
   sync-index: 1.0.13
   type-fest: 2.12.2
   typescript: 4.6.4
@@ -4085,8 +4085,8 @@ packages:
       - typescript
     dev: true
 
-  /lionconfig/1.7.3_typescript@4.6.4:
-    resolution: {integrity: sha512-3/N9RArPKjzkLzYhjT/o0t6IDQuP0CuDn75Ur+BY/3N2Vd+8vi9Uzw0esTKXWY1wvF4IxpeEMtaS3PmaRNJnJQ==}
+  /lionconfig/1.7.6_typescript@4.6.4:
+    resolution: {integrity: sha512-1pJ0fZXjUNaDmxksBaQbO96PzO+Clvq1H7lZAC89Ezgr/oy9tfqxtZr5XAwE38pDs3klU1D48Gn8Y/+bJn02Yw==}
     hasBin: true
     requiresBuild: true
     dependencies:
@@ -4106,6 +4106,7 @@ packages:
       '@types/node': 17.0.34
       '@typescript-eslint/eslint-plugin': 5.25.0_qo2hgs5jt7x2a3p77h2rutcdae
       '@typescript-eslint/parser': 5.25.0_hcfsmds2fshutdssjqluwm76uu
+      commander: 9.2.0
       deepmerge-ts: 4.0.3
       desm: 1.2.0
       detect-indent: 7.0.0

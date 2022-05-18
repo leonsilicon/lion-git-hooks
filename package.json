@@ -1,6 +1,6 @@
 {
 	"name": "lion-git-hooks",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"description": "A fork of simple-git-hooks with additional features that fit my use case.",
 	"license": "MIT",
 	"repository": {
@@ -21,7 +21,7 @@
 		"@types/node": "^17.0.34",
 		"desm": "^1.2.0",
 		"execa": "^6.1.0",
-		"lionconfig": "^1.7.3",
+		"lionconfig": "^1.7.6",
 		"sync-index": "^1.0.13",
 		"type-fest": "^2.12.2",
 		"typescript": "^4.6.4",
