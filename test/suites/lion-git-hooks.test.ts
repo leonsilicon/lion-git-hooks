@@ -155,7 +155,7 @@ function getInstalledGitHooks(hooksDir: string): Record<string, string> {
 }
 
 const getHookDefaultCommand = (projectPath: string, hook: string) =>
-	`#!/bin/sh\npnpm exec node-ts ${JSON.stringify(
+	`#!/bin/sh\npnpm exec node-ts --resolve-pkg-from-file ${JSON.stringify(
 		path.join(projectPath, `./scripts/hooks/${hook}.ts`)
 	)} $@`;
 
