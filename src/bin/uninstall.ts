@@ -3,8 +3,8 @@
 /**
  * Removes the pre-commit from command in config by default
  */
-import { removeHooks } from '~/utils/git-hooks.js';
 import { getConfig } from '~/utils/config.js';
+import { removeHooks } from '~/utils/git-hooks.js';
 
 console.info('[INFO] Removing git hooks from .git/hooks');
 

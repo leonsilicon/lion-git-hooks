@@ -1,8 +1,9 @@
-import path from 'node:path';
-import process from 'node:process';
 import { cosmiconfigSync } from 'cosmiconfig';
 import { globbySync } from 'globby';
+import path from 'node:path';
+import process from 'node:process';
 import onetime from 'onetime';
+
 import type {
 	HookConfig,
 	LionGitHooksConfig,
@@ -50,7 +51,7 @@ export function getHookConfig(
 		hookCommand = providedHookOptions.command;
 		// eslint-disable-next-line no-negated-condition
 	} else if (providedHookOptions?.file !== undefined) {
-		hookCommand = `pnpm exec node-ts ${JSON.stringify(
+		hookCommand = `pnpm exec node-ts --resolve-pkg-from-file ${JSON.stringify(
 			providedHookOptions.file
 		)} $@`;
 	} else {
@@ -69,7 +70,7 @@ export function getHookConfig(
 			}
 		}
 
-		hookCommand = `pnpm exec node-ts ${JSON.stringify(matches[0]!)} $@`;
+		hookCommand = `pnpm exec node-ts --resolve-pkg-from-file ${JSON.stringify(matches[0]!)} $@`;
 	}
 
 	return {

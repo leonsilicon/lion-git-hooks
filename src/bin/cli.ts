@@ -3,9 +3,10 @@
 /**
  * A CLI tool to change the git hooks to commands from config
  */
-import process from 'node:process';
-import minimist from 'minimist';
 import isHeroku from 'is-heroku';
+import minimist from 'minimist';
+import process from 'node:process';
+
 import { getConfig } from '~/utils/config.js';
 import { setHooksFromConfig } from '~/utils/git-hooks.js';
 

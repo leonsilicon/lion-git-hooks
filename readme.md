@@ -26,7 +26,7 @@ Then, add the following in your package.json
 
 Then, create the following folder in your project root:
 
-```
+```shell
 # Navigate to the root of your project
 cd my-project
 

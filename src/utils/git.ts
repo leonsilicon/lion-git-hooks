@@ -1,5 +1,5 @@
-import path from 'node:path';
 import { findUpSync } from 'find-up';
+import path from 'node:path';
 import onetime from 'onetime';
 
 export const getValidGitHooks = onetime(() => [

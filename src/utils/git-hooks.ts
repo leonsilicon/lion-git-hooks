@@ -1,10 +1,12 @@
+import isCI from 'is-ci';
 import fs from 'node:fs';
 import path from 'node:path';
-import isCI from 'is-ci';
-import { getHookConfig } from './config.js';
-import { getValidGitHooks, getProjectGitFolder } from './git.js';
-import { getPackageJson } from './project.js';
+
 import type { LionGitHooksConfig } from '~/types/config.js';
+
+import { getHookConfig } from './config.js';
+import { getProjectGitFolder,getValidGitHooks } from './git.js';
+import { getPackageJson } from './project.js';
 
 /**
  * Checks the 'lion-git-hooks' in dependencies of the project

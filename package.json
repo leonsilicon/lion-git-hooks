@@ -11,14 +11,9 @@
 	"bin": "./bin/cli.js",
 	"type": "module",
 	"scripts": {
-		"release": "lionp",
 		"prepare": "pnpm start",
 		"build": "node-ts ./scripts/build.ts",
-		"start": "node-ts ./src/bin/cli.ts",
-		"test": "vitest run",
-		"lint": "eslint --cache --fix .",
-		"prettier": "prettier --write src",
-		"typecheck": "tsc --noEmit"
+		"start": "node-ts ./src/bin/cli.ts"
 	},
 	"devDependencies": {
 		"@types/is-ci": "^3.0.0",

@@ -3,8 +3,9 @@
 /**
  * Creates the pre-commit from command in config by default
  */
-import process from 'node:process';
 import isHeroku from 'is-heroku';
+import process from 'node:process';
+
 import { getConfig } from '~/utils/config.js';
 import {
 	checkSimpleGitHooksInDependencies,
